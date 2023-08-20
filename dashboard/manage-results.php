@@ -53,7 +53,9 @@ if (isset($_POST['submit'])) {
         }
 
         if ($uploadOk == 0) {
-            echo "Sorry, your file was not uploaded.";
+            // echo "Sorry, your file was not uploaded.";
+            echo '<script>alert("Sorry, your file was not uploaded."); window.location.href = "manage-results.php";</script>';
+        exit();
         } else {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
                 echo "The file " . htmlspecialchars(basename($_FILES["image"]["name"])) . " has been uploaded.";
@@ -291,7 +293,7 @@ $result = mysqli_query($con, $query);
                             </div>
                         </div>
                         <div class="card-body">
-                        <form method="post" enctype="multipart/form-data">
+                            <form method="post" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <div class="profile-img-edit position-relative">
                                         <style>
@@ -403,52 +405,52 @@ $result = mysqli_query($con, $query);
                         </div>
                         <div class="card-body px-0">
                             <div class="table-left-bordered table-responsive mt-3">
-                            <table class="table mb-0" id="datatable" data-toggle="data-table">
-    <thead>
-        <tr class="bg-white">
-            <th scope="col">Pink Sheet</th>
-            <th scope="col">Full Name</th>
-            <th scope="col">Region</th>
-            <th scope="col">Electoral Officer</th>
-            <th scope="col">Results</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        $query = "SELECT tr.*, tc.fname, tc.lname, trc.region_name 
+                                <table class="table mb-0" id="datatable" data-toggle="data-table">
+                                    <thead>
+                                        <tr class="bg-white">
+                                            <th scope="col">Pink Sheet</th>
+                                            <th scope="col">Full Name</th>
+                                            <th scope="col">Region</th>
+                                            <th scope="col">Electoral Officer</th>
+                                            <th scope="col">Results</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $query = "SELECT tr.*, tc.fname, tc.lname, trc.region_name 
                   FROM tblresults tr
                   INNER JOIN tblcandidate tc ON tr.candidate_id = tc.candidate_id
                   INNER JOIN tblregion trc ON tr.region_id = trc.region_id";
 
-        $result = mysqli_query($con, $query);
+                                        $result = mysqli_query($con, $query);
 
-        while ($row = mysqli_fetch_assoc($result)) { ?>
-            <tr>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <img class="rounded img-fluid me-3" width="60"
-                            src="<?php echo $row['image']; ?>" alt="Profile Image"
-                            loading="lazy">
-                    </div>
-                </td>
-                <td class="text-dark">
-                    <h5 class="iq-sub-label">
-                        <?php echo $row['fname'] . ' ' . $row['lname']; ?>
-                    </h5>
-                </td>
-                <td class="text-dark">
-                    <?php echo $row['region_name']; ?>
-                </td>
-                <td class="text-dark">
-                    <?php echo $row['electoral_officer']; ?>
-                </td>
-                <td class="text-dark">
-                    <?php echo $row['results']; ?>
-                </td>
-            </tr>
-        <?php } ?>
-    </tbody>
-</table>
+                                        while ($row = mysqli_fetch_assoc($result)) { ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img class="rounded img-fluid me-3" width="60"
+                                                            src="<?php echo $row['image']; ?>" alt="Profile Image"
+                                                            loading="lazy">
+                                                    </div>
+                                                </td>
+                                                <td class="text-dark">
+                                                    <h5 class="iq-sub-label">
+                                                        <?php echo $row['fname'] . ' ' . $row['lname']; ?>
+                                                    </h5>
+                                                </td>
+                                                <td class="text-dark">
+                                                    <?php echo $row['region_name']; ?>
+                                                </td>
+                                                <td class="text-dark">
+                                                    <?php echo $row['electoral_officer']; ?>
+                                                </td>
+                                                <td class="text-dark">
+                                                    <?php echo $row['results']; ?>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
 
                             </div>
                         </div>
