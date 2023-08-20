@@ -1,6 +1,7 @@
 <?php
 require('./includes/header.php');
 require('./includes/side-bar.php');
+require('./includes/authorization.php');
 
 
 if (isset($_POST['submit'])) {

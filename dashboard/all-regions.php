@@ -21,7 +21,7 @@ $result = mysqli_query($con, $select_query);
         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
         <div class="col" data-item="list">
         
-            <a href="#">
+            <a href="region-results.php">
             <div class="card flex-row">
             <div class="card-body rounded-end bg-primary d-flex align-items-center justify-content-center" style="background: linear-gradient(-45deg, rgba(9,9,121,1) 0%, rgba(9,9,121,1) 35%, rgba(2,0,36,1 ) 100%);">
                     <div class="d-flex justify-content-center mb-2">

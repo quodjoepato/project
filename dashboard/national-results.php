@@ -1,6 +1,6 @@
 <?php
 require('./includes/header.php');
-require('./includes/side-bar.php');
+require('./includes/user-side-bar.php');
 require('./includes/nav-bar.php');
 
 
