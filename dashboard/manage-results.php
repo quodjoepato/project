@@ -3,7 +3,6 @@ require('./includes/header.php');
 require('./includes/side-bar.php');
 require('./includes/authorization.php');
 
-
 if (isset($_POST['submit'])) {
     // Get the form data
     $candidate_id = $_POST['candidate'];
@@ -11,56 +10,71 @@ if (isset($_POST['submit'])) {
     $electoral_officer = mysqli_real_escape_string($con, $_POST['officer']);
     $results = $_POST['results'];
 
-    // Handle image upload
-    $target_dir = "../assets/images/results/"; // Adjust the target directory path
-    $target_file = $target_dir . basename($_FILES["image"]["name"]);
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    // Check if a row with the same candidate_id and region_id exists
+    $existingQuery = "SELECT * FROM tblresults WHERE candidate_id = $candidate_id AND region_id = $region_id";
+    $existingResult = mysqli_query($con, $existingQuery);
 
-    // Check if image file is a actual image or fake image
-    if (isset($_POST["submit"])) {
-        $check = getimagesize($_FILES["image"]["tmp_name"]);
-        if ($check !== false) {
-            echo "File is an image - " . $check["mime"] . ".";
-            $uploadOk = 1;
-        } else {
-            echo "File is not an image.";
+    if (mysqli_num_rows($existingResult) > 0) {
+        // A row with the same candidate_id and region_id exists, prevent adding result
+        // echo "A result for this candidate and region already exists.";
+        echo '<script>alert("A result for this candidate and region already exists."); window.location.href = "manage-results.php";</script>';
+        exit();
+    } else {
+        // No existing row, proceed with adding result
+
+        // Handle image upload
+        $target_dir = "../assets/images/results/"; // Adjust the target directory path
+        $target_file = $target_dir . basename($_FILES["image"]["name"]);
+        $uploadOk = 1;
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+        // Check if image file is a actual image or fake image
+        if (isset($_POST["submit"])) {
+            $check = getimagesize($_FILES["image"]["tmp_name"]);
+            if ($check !== false) {
+                echo "File is an image - " . $check["mime"] . ".";
+                $uploadOk = 1;
+            } else {
+                echo "File is not an image.";
+                $uploadOk = 0;
+            }
+        }
+
+        // Check file size
+        if ($_FILES["image"]["size"] > 500000) { // Adjust the file size limit as needed
+            echo "Sorry, your file is too large.";
             $uploadOk = 0;
         }
-    }
 
-    // Check file size
-    if ($_FILES["image"]["size"] > 500000) { // Adjust the file size limit as needed
-        echo "Sorry, your file is too large.";
-        $uploadOk = 0;
-    }
+        // Allow only specific image file formats
+        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
+            echo "Sorry, only JPG, JPEG, PNG files are allowed.";
+            $uploadOk = 0;
+        }
 
-    // Allow only specific image file formats
-    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
-        echo "Sorry, only JPG, JPEG, PNG files are allowed.";
-        $uploadOk = 0;
-    }
-
-    if ($uploadOk == 0) {
-        echo "Sorry, your file was not uploaded.";
-    } else {
-        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-            echo "The file " . htmlspecialchars(basename($_FILES["image"]["name"])) . " has been uploaded.";
-            // Image upload successful, now insert data into the database
-            $image_path = $target_file;
-
-            $query = "INSERT INTO tblresults (candidate_id, region_id, electoral_officer, results, image)
-                      VALUES ('$candidate_id', '$region_id', '$electoral_officer', '$results', '$image_path')";
-            $result = mysqli_query($con, $query);
-
-            if ($result) {
-                echo '<script>alert("Data saved successfully."); window.location.href = "manage-results.php";</script>';
-                exit();
-            } else {
-                echo "Error: " . mysqli_error($con);
-            }
+        if ($uploadOk == 0) {
+            echo "Sorry, your file was not uploaded.";
         } else {
-            echo "Sorry, there was an error uploading your file.";
+            if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                echo "The file " . htmlspecialchars(basename($_FILES["image"]["name"])) . " has been uploaded.";
+                // Image upload successful, now insert data into the database
+                $image_path = $target_file;
+
+                $query = "INSERT INTO tblresults (candidate_id, region_id, electoral_officer, results, image)
+                          VALUES ('$candidate_id', '$region_id', '$electoral_officer', '$results', '$image_path')";
+                $result = mysqli_query($con, $query);
+
+                if ($result) {
+                    echo '<script>alert("Data saved successfully."); window.location.href = "manage-results.php";</script>';
+                    exit();
+                } else {
+                    echo "Error: " . mysqli_error($con);
+                }
+            } else {
+                // echo "Sorry, there was an error uploading your file.";
+                echo '<script>alert("Sorry, there was an error uploading your file."); window.location.href = "manage-results.php";</script>';
+                exit();
+            }
         }
     }
 }
@@ -82,7 +96,12 @@ $regions = array();
 while ($row = mysqli_fetch_assoc($result)) {
     $regions[] = $row;
 }
+
+
+$query = "SELECT * FROM tblresults";
+$result = mysqli_query($con, $query);
 ?>
+
 
 
 <main class="main-content">
@@ -380,99 +399,57 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <div class="col-xl-9 col-lg-8">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">All Candidates</h5>
+                            <h5 class="mb-0">All Results</h5>
                         </div>
                         <div class="card-body px-0">
                             <div class="table-left-bordered table-responsive mt-3">
-                                <table class="table mb-0" id="datatable" data-toggle="data-table">
-                                    <thead>
-                                        <tr class="bg-white">
-                                            <th scope="col">Profiles</th>
-                                            <th scope="col">Full Name</th>
-                                            <th scope="col">User Name</th>
-                                            <th scope="col">User Role</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <img class="rounded img-fluid me-3" width="60"
-                                                            src="<?php echo $row['user_image']; ?>" alt="Profile Image"
-                                                            loading="lazy">
-                                                    </div>
-                                                </td>
-                                                <td class="text-dark">
-                                                    <h5 class="iq-sub-label">
-                                                        <?php echo $row['full_name']; ?>
-                                                    </h5>
-                                                </td>
-                                                <td class="text-dark">
-                                                    <?php echo $row['username']; ?>
-                                                </td>
-                                                <td class="text-dark">
-                                                    <?php echo $row['role']; ?>
-                                                </td>
+                            <table class="table mb-0" id="datatable" data-toggle="data-table">
+    <thead>
+        <tr class="bg-white">
+            <th scope="col">Pink Sheet</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Region</th>
+            <th scope="col">Electoral Officer</th>
+            <th scope="col">Results</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $query = "SELECT tr.*, tc.fname, tc.lname, trc.region_name 
+                  FROM tblresults tr
+                  INNER JOIN tblcandidate tc ON tr.candidate_id = tc.candidate_id
+                  INNER JOIN tblregion trc ON tr.region_id = trc.region_id";
 
-                                                <td>
-                                                    <div class="d-flex justify-content-evenly">
-                                                        <a class="btn btn-primary btn-icon btn-sm rounded-pill" href="#"
-                                                            role="button">
-                                                            <span class="btn-inner">
-                                                                <svg class="icon-32" width="32" viewbox="0 0 24 24"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path opacity="0.4"
-                                                                        d="M21.101 9.58786H19.8979V8.41162C19.8979 7.90945 19.4952 7.5 18.999 7.5C18.5038 7.5 18.1 7.90945 18.1 8.41162V9.58786H16.899C16.4027 9.58786 16 9.99731 16 10.4995C16 11.0016 16.4027 11.4111 16.899 11.4111H18.1V12.5884C18.1 13.0906 18.5038 13.5 18.999 13.5C19.4952 13.5 19.8979 13.0906 19.8979 12.5884V11.4111H21.101C21.5962 11.4111 22 11.0016 22 10.4995C22 9.99731 21.5962 9.58786 21.101 9.58786Z"
-                                                                        fill="currentColor"></path>
-                                                                    <path
-                                                                        d="M9.5 15.0156C5.45422 15.0156 2 15.6625 2 18.2467C2 20.83 5.4332 21.5001 9.5 21.5001C13.5448 21.5001 17 20.8533 17 18.269C17 15.6848 13.5668 15.0156 9.5 15.0156Z"
-                                                                        fill="currentColor"></path>
-                                                                    <path opacity="0.4"
-                                                                        d="M9.50023 12.5542C12.2548 12.5542 14.4629 10.3177 14.4629 7.52761C14.4629 4.73754 12.2548 2.5 9.50023 2.5C6.74566 2.5 4.5376 4.73754 4.5376 7.52761C4.5376 10.3177 6.74566 12.5542 9.50023 12.5542Z"
-                                                                        fill="currentColor"></path>
-                                                                </svg>
-                                                            </span>
-                                                        </a>
-                                                        <a class="btn btn-primary btn-icon btn-sm rounded-pill ms-2"
-                                                            href="#" role="button">
-                                                            <span class="btn-inner">
-                                                                <svg class="icon-32" width="32" viewbox="0 0 24 24"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path opacity="0.4"
-                                                                        d="M19.9927 18.9534H14.2984C13.7429 18.9534 13.291 19.4124 13.291 19.9767C13.291 20.5422 13.7429 21.0001 14.2984 21.0001H19.9927C20.5483 21.0001 21.0001 20.5422 21.0001 19.9767C21.0001 19.4124 20.5483 18.9534 19.9927 18.9534Z"
-                                                                        fill="currentColor"></path>
-                                                                    <path
-                                                                        d="M10.309 6.90385L15.7049 11.2639C15.835 11.3682 15.8573 11.5596 15.7557 11.6929L9.35874 20.0282C8.95662 20.5431 8.36402 20.8344 7.72908 20.8452L4.23696 20.8882C4.05071 20.8903 3.88775 20.7613 3.84542 20.5764L3.05175 17.1258C2.91419 16.4915 3.05175 15.8358 3.45388 15.3306L9.88256 6.95545C9.98627 6.82108 10.1778 6.79743 10.309 6.90385Z"
-                                                                        fill="currentColor"></path>
-                                                                    <path opacity="0.4"
-                                                                        d="M18.1208 8.66544L17.0806 9.96401C16.9758 10.0962 16.7874 10.1177 16.6573 10.0124C15.3927 8.98901 12.1545 6.36285 11.2561 5.63509C11.1249 5.52759 11.1069 5.33625 11.2127 5.20295L12.2159 3.95706C13.126 2.78534 14.7133 2.67784 15.9938 3.69906L17.4647 4.87078C18.0679 5.34377 18.47 5.96726 18.6076 6.62299C18.7663 7.3443 18.597 8.0527 18.1208 8.66544Z"
-                                                                        fill="currentColor"></path>
-                                                                </svg>
-                                                            </span>
-                                                        </a>
-                                                        <a class="btn btn-primary btn-icon btn-sm rounded-pill ms-2"
-                                                            href="#" role="button">
-                                                            <span class="btn-inner">
-                                                                <svg class="icon-32" width="32" viewbox="0 0 24 24"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path opacity="0.4"
-                                                                        d="M19.643 9.48851C19.643 9.5565 19.11 16.2973 18.8056 19.1342C18.615 20.8751 17.4927 21.9311 15.8092 21.9611C14.5157 21.9901 13.2494 22.0001 12.0036 22.0001C10.6809 22.0001 9.38741 21.9901 8.13185 21.9611C6.50477 21.9221 5.38147 20.8451 5.20057 19.1342C4.88741 16.2873 4.36418 9.5565 4.35445 9.48851C4.34473 9.28351 4.41086 9.08852 4.54507 8.93053C4.67734 8.78453 4.86796 8.69653 5.06831 8.69653H18.9388C19.1382 8.69653 19.3191 8.78453 19.4621 8.93053C19.5953 9.08852 19.6624 9.28351 19.643 9.48851Z"
-                                                                        fill="currentColor"></path>
-                                                                    <path
-                                                                        d="M21 5.97686C21 5.56588 20.6761 5.24389 20.2871 5.24389H17.3714C16.7781 5.24389 16.2627 4.8219 16.1304 4.22692L15.967 3.49795C15.7385 2.61698 14.9498 2 14.0647 2H9.93624C9.0415 2 8.26054 2.61698 8.02323 3.54595L7.87054 4.22792C7.7373 4.8219 7.22185 5.24389 6.62957 5.24389H3.71385C3.32386 5.24389 3 5.56588 3 5.97686V6.35685C3 6.75783 3.32386 7.08982 3.71385 7.08982H20.2871C20.6761 7.08982 21 6.75783 21 6.35685V5.97686Z"
-                                                                        fill="currentColor"></path>
-                                                                </svg>
-                                                            </span>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php } ?>
+        $result = mysqli_query($con, $query);
 
-                                    </tbody>
-                                </table>
+        while ($row = mysqli_fetch_assoc($result)) { ?>
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img class="rounded img-fluid me-3" width="60"
+                            src="<?php echo $row['image']; ?>" alt="Profile Image"
+                            loading="lazy">
+                    </div>
+                </td>
+                <td class="text-dark">
+                    <h5 class="iq-sub-label">
+                        <?php echo $row['fname'] . ' ' . $row['lname']; ?>
+                    </h5>
+                </td>
+                <td class="text-dark">
+                    <?php echo $row['region_name']; ?>
+                </td>
+                <td class="text-dark">
+                    <?php echo $row['electoral_officer']; ?>
+                </td>
+                <td class="text-dark">
+                    <?php echo $row['results']; ?>
+                </td>
+            </tr>
+        <?php } ?>
+    </tbody>
+</table>
+
                             </div>
                         </div>
                     </div>
