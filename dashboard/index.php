@@ -3,6 +3,7 @@ require('./includes/header.php');
 require('./includes/side-bar.php');
 require('./includes/nav-bar.php');
 require('./includes/authorization.php');
+require('./includes/customizer.php');
  ?>
 
                
