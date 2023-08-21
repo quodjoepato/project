@@ -1,19 +1,21 @@
-(function () {
+(function() {
     ("use strict");
     // Customizer Setting initialize
     let setting_options = document.querySelector('meta[name="setting_options"]');
     if (setting_options !== null && setting_options !== undefined) {
         setting_options = JSON.parse(setting_options.getAttribute("content"));
+        console.log("metaprovided: " + setting_options)
     } else {
-        setting_options = JSON.parse("{}");
+        setting_options = selectTheme('3')
+        console.log("no meta: " + setting_options)
     }
 
     const theme = IQUtils.getQueryString('theme')
-    if(theme !== '' && theme !== null) {
+    if (theme !== '' && theme !== null) {
         setting_options = selectTheme(theme)
     }
 
-    document.addEventListener('sidebar_show', function (value) {
+    document.addEventListener('sidebar_show', function(value) {
         const sidebar = document.querySelector('[data-toggle="main-sidebar"]')
         if (value.detail.value.length > 0) {
             sidebar.classList.remove('sidebar')
@@ -27,47 +29,47 @@
     const setting = (window.IQSetting = new IQSetting(setting_options));
 
     // Sidebar type event listener
-    $(document).on("sidebar_type", function (e) {
+    $(document).on("sidebar_type", function(e) {
         if (typeof setting !== typeof undefined) {
-        const sidebarType = setting.options.setting.sidebar_type.value;
-        if(e.detail.value.length !== 0) {
-            if(e.detail.currentValue !== 'sidebar-mini' && e.detail.currentValue !== '') {
-            if (sidebarType.includes("sidebar-hover") && !e.detail.value.includes("sidebar-mini")) {
-                const newTypes = sidebarType;
-                newTypes.push("sidebar-mini");
-                setting.sidebar_type(newTypes);
+            const sidebarType = setting.options.setting.sidebar_type.value;
+            if (e.detail.value.length !== 0) {
+                if (e.detail.currentValue !== 'sidebar-mini' && e.detail.currentValue !== '') {
+                    if (sidebarType.includes("sidebar-hover") && !e.detail.value.includes("sidebar-mini")) {
+                        const newTypes = sidebarType;
+                        newTypes.push("sidebar-mini");
+                        setting.sidebar_type(newTypes);
+                    }
+                }
             }
-            }
-        }
         }
     });
 
     // navbar style event listener
-    $(document).on("header_navbar", function () {
+    $(document).on("header_navbar", function() {
         if (typeof setting !== typeof undefined) {
-        const headerNavbar = setting.options.setting.header_navbar;
-        if (headerNavbar.value == "nav-glass") {
-            $(headerNavbar.target).addClass("navs-sticky");
-        }
+            const headerNavbar = setting.options.setting.header_navbar;
+            if (headerNavbar.value == "nav-glass") {
+                $(headerNavbar.target).addClass("navs-sticky");
+            }
         }
     });
     document.addEventListener('click', function(e) {
         const liveCustomizerPannel = document.querySelector('#live-customizer')
-        if(liveCustomizerPannel !== null) {
-        if(liveCustomizerPannel.classList.contains('show')) {
-            if(e.target.closest('.live-customizer') == null && e.target.closest('#settingbutton') == null) {
-            bootstrap.Offcanvas.getInstance(liveCustomizerPannel).hide()
+        if (liveCustomizerPannel !== null) {
+            if (liveCustomizerPannel.classList.contains('show')) {
+                if (e.target.closest('.live-customizer') == null && e.target.closest('#settingbutton') == null) {
+                    bootstrap.Offcanvas.getInstance(liveCustomizerPannel).hide()
+                }
             }
-        }
         }
     })
 
     const liveCusomizer = IQUtils.getQueryString('live-customizer')
-    if(liveCusomizer !== '' && liveCusomizer !== null && liveCusomizer === 'open') {
+    if (liveCusomizer !== '' && liveCusomizer !== null && liveCusomizer === 'open') {
         const liveCustomizerPannel = document.querySelector('#live-customizer')
         const liveCustomizerInstance = new bootstrap.Offcanvas(liveCustomizerPannel)
-        if(liveCustomizerInstance !== null) {
-        liveCustomizerInstance.show()
+        if (liveCustomizerInstance !== null) {
+            liveCustomizerInstance.show()
         }
     }
 
@@ -75,10 +77,10 @@
                 Reset Settings
     -----------------------------------------------------------------------*/
     const resetSettings = document.querySelector('[data-reset="settings"]');
-    if(resetSettings !== null){
+    if (resetSettings !== null) {
         resetSettings.addEventListener('click', (e) => {
             e.preventDefault();
-            const confirm = window.confirm('Are you sure you want to reset your settings?');
+            const confirm = window.confirm('Are you sure you want to reset all your settings?');
             if (confirm) {
                 window.IQSetting.reInit()
             }
@@ -89,7 +91,7 @@
                 Copy Json
     -----------------------------------------------------------------------*/
     const copySettings = document.querySelector('[data-copy="settings"]');
-    if(copySettings !== null) {
+    if (copySettings !== null) {
         copySettings.addEventListener('click', (e) => {
             e.preventDefault();
             let settingJson = window.IQSetting.getSettingJson()
@@ -112,191 +114,258 @@
 
     function selectTheme(theme) {
         switch (theme) {
-        case '0':
-            return {
-            "setting": {
-                "app_name": {
-                    "value": "Hope UI"
-                },
-                "theme_scheme_direction": {
-                    "value": "ltr"
-                },
-                "theme_scheme": {
-                    "value": "light"
-                },
-                "theme_style_appearance": {
-                    "value": []
-                },
-                "theme_color": {
-                    "colors": {
-                        "--{{prefix}}primary": "#ab52da",
-                        "--{{prefix}}info": "#644276"
-                    },
-                    "value": "custom"
-                },
-                "theme_transition": {
-                    "value": "theme-with-animation"
-                },
-                "theme_font_size": {
-                    "value": "theme-fs-md"
-                },
-                "page_layout": {
-                    "value": "container-fluid"
-                },
-                "header_navbar": {
-                    "value": "navs-sticky"
-                },
-                "header_banner": {
-                    "value": "default"
-                },
-                "sidebar_color": {
-                    "value": "sidebar-color"
-                },
-                "sidebar_type": {
-                    "value": [
-                        "sidebar-mini",
-                        "sidebar-hover",
-                        "sidebar-boxed",
-                        "sidebar-soft"
-                    ]
-                },
-                "sidebar_menu_style": {
-                    "value": "navs-pill-all"
-                },
-                "footer": {
-                    "value": "default"
-                },
-                "body_font_family": {
-                    "value": null
-                },
-                "heading_font_family": {
-                    "value": null
+            case '0':
+                return {
+                    "setting": {
+                        "app_name": {
+                            "value": "Hope UI"
+                        },
+                        "theme_scheme_direction": {
+                            "value": "ltr"
+                        },
+                        "theme_scheme": {
+                            "value": "light"
+                        },
+                        "theme_style_appearance": {
+                            "value": []
+                        },
+                        "theme_color": {
+                            "colors": {
+                                "--{{prefix}}primary": "#ab52da",
+                                "--{{prefix}}info": "#644276"
+                            },
+                            "value": "custom"
+                        },
+                        "theme_transition": {
+                            "value": "theme-with-animation"
+                        },
+                        "theme_font_size": {
+                            "value": "theme-fs-md"
+                        },
+                        "page_layout": {
+                            "value": "container-fluid"
+                        },
+                        "header_navbar": {
+                            "value": "navs-sticky"
+                        },
+                        "header_banner": {
+                            "value": "default"
+                        },
+                        "sidebar_color": {
+                            "value": "sidebar-color"
+                        },
+                        "sidebar_type": {
+                            "value": [
+                                "sidebar-mini",
+                                "sidebar-hover",
+                                "sidebar-boxed",
+                                "sidebar-soft"
+                            ]
+                        },
+                        "sidebar_menu_style": {
+                            "value": "navs-pill-all"
+                        },
+                        "footer": {
+                            "value": "default"
+                        },
+                        "body_font_family": {
+                            "value": null
+                        },
+                        "heading_font_family": {
+                            "value": null
+                        }
+                    }
                 }
-            }
-        }
-        break;
-        case '1':
-            return {
-            "setting": {
-                "app_name": {
-                    "value": "Hope UI"
-                },
-                "theme_scheme_direction": {
-                    "value": "ltr"
-                },
-                "theme_scheme": {
-                    "value": "light"
-                },
-                "theme_style_appearance": {
-                    "value": []
-                },
-                "theme_color": {
-                    "colors": {
-                        "--{{prefix}}primary": "#22b4b2",
-                        "--{{prefix}}info": "#45494f"
-                    },
-                    "value": "custom"
-                },
-                "theme_transition": {
-                    "value": null
-                },
-                "theme_font_size": {
-                    "value": "theme-fs-md"
-                },
-                "page_layout": {
-                    "value": "container-fluid"
-                },
-                "header_navbar": {
-                    "value": "navs-default"
-                },
-                "header_banner": {
-                    "value": "default"
-                },
-                "sidebar_color": {
-                    "value": "sidebar-dark"
-                },
-                "sidebar_type": {
-                    "value": [
-                        "sidebar-boxed"
-                    ]
-                },
-                "sidebar_menu_style": {
-                    "value": "navs-pill"
-                },
-                "footer": {
-                    "value": "default"
-                },
-                "body_font_family": {
-                    "value": null
-                },
-                "heading_font_family": {
-                    "value": null
+                break;
+            case '1':
+                return {
+                    "setting": {
+                        "app_name": {
+                            "value": "Hope UI"
+                        },
+                        "theme_scheme_direction": {
+                            "value": "ltr"
+                        },
+                        "theme_scheme": {
+                            "value": "light"
+                        },
+                        "theme_style_appearance": {
+                            "value": []
+                        },
+                        "theme_color": {
+                            "colors": {
+                                "--{{prefix}}primary": "#22b4b2",
+                                "--{{prefix}}info": "#45494f"
+                            },
+                            "value": "custom"
+                        },
+                        "theme_transition": {
+                            "value": null
+                        },
+                        "theme_font_size": {
+                            "value": "theme-fs-md"
+                        },
+                        "page_layout": {
+                            "value": "container-fluid"
+                        },
+                        "header_navbar": {
+                            "value": "navs-default"
+                        },
+                        "header_banner": {
+                            "value": "default"
+                        },
+                        "sidebar_color": {
+                            "value": "sidebar-dark"
+                        },
+                        "sidebar_type": {
+                            "value": [
+                                "sidebar-boxed"
+                            ]
+                        },
+                        "sidebar_menu_style": {
+                            "value": "navs-pill"
+                        },
+                        "footer": {
+                            "value": "default"
+                        },
+                        "body_font_family": {
+                            "value": null
+                        },
+                        "heading_font_family": {
+                            "value": null
+                        }
+                    }
                 }
-            }
-        }
-        break;
-        case '2':
-            return {
-            "setting": {
-                "app_name": {
-                    "value": "Hope UI"
-                },
-                "theme_scheme_direction": {
-                    "value": "ltr"
-                },
-                "theme_scheme": {
-                    "value": "light"
-                },
-                "theme_style_appearance": {
-                    "value": [
-                        "theme-default"
-                    ]
-                },
-                "theme_color": {
-                    "colors": {
-                        "--{{prefix}}primary": "#b56be6",
-                        "--{{prefix}}info": "#25C799"
-                    },
-                    "value": "custom"
-                },
-                "theme_transition": {
-                    "value": null
-                },
-                "theme_font_size": {
-                    "value": "theme-fs-md"
-                },
-                "page_layout": {
-                    "value": "container-fluid"
-                },
-                "header_navbar": {
-                    "value": "navs-default"
-                },
-                "header_banner": {
-                    "value": "default"
-                },
-                "sidebar_color": {
-                    "value": "sidebar-color"
-                },
-                "sidebar_type": {
-                    "value": [
-                        "sidebar-boxed"
-                    ]
-                },
-                "sidebar_menu_style": {
-                    "value": "navs-rounded-all"
-                },
-                "footer": {
-                    "value": "default"
-                },
-                "body_font_family": {
-                    "value": null
-                },
-                "heading_font_family": {
-                    "value": null
+                break;
+            case '2':
+                return {
+                    "setting": {
+                        "app_name": {
+                            "value": "Hope UI"
+                        },
+                        "theme_scheme_direction": {
+                            "value": "ltr"
+                        },
+                        "theme_scheme": {
+                            "value": "light"
+                        },
+                        "theme_style_appearance": {
+                            "value": [
+                                "theme-default"
+                            ]
+                        },
+                        "theme_color": {
+                            "colors": {
+                                "--{{prefix}}primary": "#b56be6",
+                                "--{{prefix}}info": "#25C799"
+                            },
+                            "value": "custom"
+                        },
+                        "theme_transition": {
+                            "value": null
+                        },
+                        "theme_font_size": {
+                            "value": "theme-fs-md"
+                        },
+                        "page_layout": {
+                            "value": "container-fluid"
+                        },
+                        "header_navbar": {
+                            "value": "navs-default"
+                        },
+                        "header_banner": {
+                            "value": "default"
+                        },
+                        "sidebar_color": {
+                            "value": "sidebar-color"
+                        },
+                        "sidebar_type": {
+                            "value": [
+                                "sidebar-boxed"
+                            ]
+                        },
+                        "sidebar_menu_style": {
+                            "value": "navs-rounded-all"
+                        },
+                        "footer": {
+                            "value": "default"
+                        },
+                        "body_font_family": {
+                            "value": null
+                        },
+                        "heading_font_family": {
+                            "value": null
+                        }
+                    }
                 }
-            }
-        }
-        break;
+                break;
+            case '3':
+                return {
+                    setting: {
+                        app_name: {
+                            value: "E.R Center",
+                        },
+                        theme_scheme_direction: {
+                            value: "ltr",
+                        },
+                        theme_scheme: {
+                            value: "auto",
+                        },
+                        theme_style_appearance: {
+                            value: ["theme-flat"],
+                        },
+                        theme_color: {
+                            colors: {
+                                "--{{prefix}}primary": "#063289",
+                                "--{{prefix}}info": "#c80404",
+                            },
+                            value: "custom",
+                        },
+                        theme_transition: {
+                            value: "theme-with-animation",
+                        },
+                        theme_font_size: {
+                            value: "theme-fs-md",
+                        },
+                        page_layout: {
+                            value: "container-fluid",
+                        },
+                        header_navbar_show: {
+                            value: [],
+                        },
+                        header_navbar: {
+                            value: "navs-default",
+                        },
+                        header_banner: {
+                            value: "hide",
+                        },
+                        card_color: {
+                            value: "card-default",
+                        },
+                        sidebar_show: {
+                            value: [],
+                        },
+                        sidebar_color: {
+                            value: "sidebar-white",
+                        },
+                        sidebar_type: {
+                            value: [],
+                        },
+                        sidebar_menu_style: {
+                            value: "left-bordered",
+                        },
+                        footer: {
+                            value: "sticky",
+                        },
+                        body_font_family: {
+                            value: null,
+                        },
+                        heading_font_family: {
+                            value: null,
+                        },
+                    },
+                };
+                break;
         }
     }
 
@@ -309,24 +378,25 @@
     let apiCall = false
     let api = document.querySelector('meta[name="google_font_api"]').getAttribute('content')
     const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${api}&sort=popularity`;
-    function getGoogleFonts(){
+
+    function getGoogleFonts() {
         fetch(url).then(response => response.json())
-        .then(data => {
-            apiCall = true
-            // select2 options add
-            fontList = data.items.map(font => {
-                return {
-                    id: font.family,
-                    text: font.family,
-                }
+            .then(data => {
+                apiCall = true
+                    // select2 options add
+                fontList = data.items.map(font => {
+                    return {
+                        id: font.family,
+                        text: font.family,
+                    }
+                })
+                $('[data-select="font"]').select2({
+                    data: fontList
+                })
             })
-            $('[data-select="font"]').select2({
-                data: fontList
-            })
-        })
     }
-    $('#settingbutton').on('click', function (e) {
-        if(!apiCall) {
+    $('#settingbutton').on('click', function(e) {
+        if (!apiCall) {
             getGoogleFonts()
         }
     })
