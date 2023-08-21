@@ -138,7 +138,7 @@
                                      <hr class="dropdown-divider">
                                   </li>
                                   <li>
-                                     <a class="dropdown-item" href="includes/logout.php">Logout</a>
+                                     <a class="dropdown-item" href="logout.php">Logout</a>
                                   </li>
                                </ul>
                             </li>

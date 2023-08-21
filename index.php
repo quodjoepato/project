@@ -24,7 +24,7 @@ if (isset($_POST['login'])) {
                 header("Location: ./dashboard/index.php");
             } elseif ($user['role'] == 'user') {
                 $_SESSION['user_type'] = "user";
-                header("Location: ./dashboard/user-index.php");
+                header("Location: ./dashboard/user-dashboard.php");
             }
             exit();
         }
@@ -42,7 +42,8 @@ if (isset($_POST['login'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title data-setting="app_name" data-rightJoin=" Pro | Responsive Bootstrap 5 Admin Dashboard Template">Hope UI</title>
+    <title data-setting="app_name" data-rightJoin=" Pro | Responsive Bootstrap 5 Admin Dashboard Template">Hope UI Pro |
+        Responsive Bootstrap 5 Admin Dashboard Template</title>
     <meta name="description"
         content="Hope UI Pro is a revolutionary Bootstrap Admin Dashboard Template and UI Components Library. The Admin Dashboard Template and UI Component features 8 modules.">
     <meta name="keywords"
@@ -107,6 +108,19 @@ if (isset($_POST['login'])) {
     <!-- loader END -->
     <div class="wrapper">
         <div class="iq-auth-page">
+
+            <nav class="navbar iq-auth-logo">
+                <div class="container-fluid">
+                    <a href="../index-2.html" class="iq-link d-flex align-items-center">
+                        <img src="https://templates.iqonic.design/hope-ui/pro/html/assets/images/favicon.ico" alt="logo"
+                            loading="lazy" />
+                        <h4 data-setting="app_name" class="mb-0">Hope UI</h4>
+                    </a>
+                </div>
+            </nav>
+            <div class="iq-banner-logo d-none d-lg-block">
+                <img class="auth-image" src="./assets/images/01.png" alt="logo-img" loading="lazy" />
+            </div>
             <div class="container-inside">
                 <div class="main-circle circle-small"></div>
                 <div class="main-circle circle-medium"></div>

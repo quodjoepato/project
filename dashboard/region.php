@@ -2,7 +2,6 @@
 <?php 
 require('./includes/header.php');
 require('./includes/side-bar.php');
-require('./includes/authorization.php');
 
  ?>
  <main class="main-content">

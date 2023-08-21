@@ -1,8 +1,7 @@
-
 <?php 
 require('./includes/header.php');
 require('./includes/side-bar.php');
-require('./includes/authorization.php');
+// require('./includes/customizer.php');
 
 
 
@@ -547,7 +546,7 @@ function confirmDelete(candidateId) {
         <!-- Settings Script -->
         <script src="../assets/js/iqonic-script/setting.min.js"></script>
         <!-- Settings Init Script -->
-        <script src="../assets/js/setting-init.js"></script>
+        <script src="../assets/js/setting-init.js?v=1"></script>
         <!-- External Library Bundle Script -->
         <script src="../assets/js/core/external.min.js"></script>
         <!-- Widgetchart Script -->
