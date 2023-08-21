@@ -107,19 +107,6 @@ if (isset($_POST['login'])) {
     <!-- loader END -->
     <div class="wrapper">
         <div class="iq-auth-page">
-
-            <nav class="navbar iq-auth-logo">
-                <div class="container-fluid">
-                    <a href="../index-2.html" class="iq-link d-flex align-items-center">
-                        <img src="https://templates.iqonic.design/hope-ui/pro/html/assets/images/favicon.ico" alt="logo"
-                            loading="lazy" />
-                        <h4 data-setting="app_name" class="mb-0">Hope UI</h4>
-                    </a>
-                </div>
-            </nav>
-            <div class="iq-banner-logo d-none d-lg-block">
-                <img class="auth-image" src="./assets/images/01.png" alt="logo-img" loading="lazy" />
-            </div>
             <div class="container-inside">
                 <div class="main-circle circle-small"></div>
                 <div class="main-circle circle-medium"></div>
